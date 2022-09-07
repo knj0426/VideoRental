@@ -29,8 +29,8 @@ public class Customer {
 
 	public void addRental(Rental rental) {
 		rentals.add(rental);
-
 	}
+
 
 	public String getReport() {
 		String result = "Customer Report for " + getName() + "\n";
@@ -44,14 +44,11 @@ public class Customer {
 			double eachCharge = 0;
 			int eachPoint = 0 ;
 			int daysRented = 0;
+			long diff = 0;
 
-			if (each.getStatus() == 1) { // returned Video
-				long diff = each.getReturnDate().getTime() - each.getRentDate().getTime();
-				daysRented = (int) (diff / (1000 * 60 * 60 * 24)) + 1;
-			} else { // not yet returned
-				long diff = new Date().getTime() - each.getRentDate().getTime();
-				daysRented = (int) (diff / (1000 * 60 * 60 * 24)) + 1;
-			}
+			// Remove Duplicate
+			// Extract Method
+ 			each.getdaysRented();
 
 			switch (each.getVideo().getPriceCode()) {
 			case Video.REGULAR:
@@ -64,13 +61,7 @@ public class Customer {
 				break;
 			}
 
-			eachPoint++;
-
-			if ((each.getVideo().getPriceCode() == Video.NEW_RELEASE) )
-				eachPoint++;
-
-			if ( daysRented > each.getDaysRentedLimit() )
-				eachPoint -= Math.min(eachPoint, each.getVideo().getLateReturnPointPenalty()) ;
+			eachPoint = calculateEachPoint(eachPoint, each, daysRented);
 
 			result += "\t" + each.getVideo().getTitle() + "\tDays rented: " + daysRented + "\tCharge: " + eachCharge
 					+ "\tPoint: " + eachPoint + "\n";
@@ -82,7 +73,6 @@ public class Customer {
 
 		result += "Total charge: " + totalCharge + "\tTotal Point:" + totalPoint + "\n";
 
-
 		if ( totalPoint >= 10 ) {
 			System.out.println("Congrat! You earned one free coupon");
 		}
@@ -90,5 +80,17 @@ public class Customer {
 			System.out.println("Congrat! You earned two free coupon");
 		}
 		return result ;
+	}
+// Extract Method
+	public int calculateEachPoint(int eachPoint, Rental each, int daysRented){
+		eachPoint++;
+
+		if ((each.getVideo().getPriceCode() == Video.NEW_RELEASE) )
+			eachPoint++;
+
+		if ( daysRented > each.getDaysRentedLimit() )
+			eachPoint -= Math.min(eachPoint, each.getVideo().getLateReturnPointPenalty()) ;
+
+		return eachPoint;
 	}
 }
